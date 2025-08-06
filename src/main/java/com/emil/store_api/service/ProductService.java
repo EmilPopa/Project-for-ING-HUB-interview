@@ -1,12 +1,13 @@
 package com.emil.store_api.service;
 
 import com.emil.store_api.entity.Product;
-import com.emil.store_api.exception.InsufficientStockException;
-import com.emil.store_api.exception.ProductNotFoundException;
+import com.emil.store_api.exception.ResourceNotFoundException;
+import com.emil.store_api.exception.StoreApiException;
 import com.emil.store_api.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ public class ProductService {
         return repository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Product with ID {} not found", id);
-                    return new ProductNotFoundException(id);
+                    return new ResourceNotFoundException("Post", "id", id);
                 });
     }
 
@@ -56,7 +57,7 @@ public class ProductService {
         log.info("Deleting product with ID {}", id);
         if (!repository.existsById(id)) {
             log.warn("Product with ID {} not found. Cannot delete.", id);
-            throw new ProductNotFoundException(id);
+            throw new ResourceNotFoundException("Post", "id", id);
         }
         repository.deleteById(id);
         log.info("Product with ID {} deleted successfully", id);
@@ -68,7 +69,7 @@ public class ProductService {
         if (product.getQuantity() < quantity) {
             log.warn("Insufficient stock for product ID {}: requested {}, available {}",
                     id, quantity, product.getQuantity());
-            throw new InsufficientStockException("Insufficient stock");
+            throw new StoreApiException("Insufficient stock");
         }
         product.setQuantity(product.getQuantity() - quantity);
         log.info("Sold {} units of product ID {}. Remaining stock: {}", quantity, id, product.getQuantity());

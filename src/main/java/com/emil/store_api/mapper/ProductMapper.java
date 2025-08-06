@@ -4,7 +4,7 @@ import com.emil.store_api.dto.ProductRequestDto;
 import com.emil.store_api.dto.ProductResponseDto;
 import com.emil.store_api.entity.Category;
 import com.emil.store_api.entity.Product;
-import com.emil.store_api.exception.CategoryNotFoundException;
+import com.emil.store_api.exception.ResourceNotFoundException;
 import com.emil.store_api.repository.CategoryRepository;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class ProductMapper {
 
     public Product fromDto(ProductRequestDto dto) {
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", dto.getCategoryId()));
 
         Product product = new Product();
         product.setName(dto.getName());
