@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ public class ProductController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDto productRequestDto) {
         Product product = productMapper.fromDto(productRequestDto);
@@ -65,6 +67,7 @@ public class ProductController {
         return ResponseEntity.ok(pagedProducts);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/price")
     public ResponseEntity<ProductResponseDto> updatePrice(@PathVariable Long id, @RequestParam BigDecimal price) {
         log.info("Changing price of product {} to {}", id, price);
@@ -72,6 +75,7 @@ public class ProductController {
         return ResponseEntity.ok(productMapper.fromEntity(updatedProduct));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         log.info("Deleting product with id {}", id);
@@ -79,6 +83,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/sell")
     public ResponseEntity<ProductResponseDto> sellProduct(@PathVariable Long id, @RequestBody @Valid SellProductRequestDto request) {
         log.info("Selling quantity {} from product {}", request.getQuantity(), id);
